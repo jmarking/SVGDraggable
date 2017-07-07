@@ -2,11 +2,29 @@
 <html>
 <head>
     <title>index</title>
+    <link href="content/svg.css" rel="stylesheet" />
 </head>
 <body>
-    <svg style="position: absolute; top: 97px; left: 300px;" viewBox="300 97 325 10">
-        <polyline points="300,100 600,100"
-                  style="fill:none;stroke:black;stroke-width:3" />
+    <svg width="800" height="300">
+        <defs>
+            <g id="line1">
+                <polyline points="0 0 300 100 300 100 600 100" />
+            </g>
+        </defs>
+        <use class="selected" href="#line1"></use>
+        <use class="line" href="#line1"></use>
+        <circle class="node" cx="300" cy="100" r="10" />
     </svg>
+    <div draggable="true" style="position: absolute; top: 500px; left: 100px;">
+        <p>Hello World!</p>
+    </div>
+    <div id="xmouse"></div>
+    <div id="ymouse"></div>
+    <script src="scripts/svgdraggable.js"></script>
+    <script>
+        window.onload = function () {
+            new SVGDraggable.Drag();
+        };
+    </script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+﻿polyline {
+    fill: none;
+}
+
+.node {
+    display: none;
+}
+
+use {
+}
+
+    use:hover {
+        cursor: pointer;
+    }
+
+    use.line {
+        stroke: black;
+        stroke-width: 7;
+    }
+
+    use.selected {
+        display: none;
+        stroke: red;
+        stroke-width: 10;
+        stroke-dasharray: 10 5;
+    }
+
+circle.node {
+    fill: blue;
+}
