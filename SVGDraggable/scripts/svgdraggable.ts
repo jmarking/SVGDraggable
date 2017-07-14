@@ -1,18 +1,16 @@
 ﻿module SVGDraggable {
     export class Drag {
-        selectedPolyline: HTMLElement;
+        svgObject: SVGObject;
 
         constructor() {
+            this.svgObject = new SVGObject();
             this.registerEvents();
         }
 
         private registerEvents() {
-            document.addEventListener('mousemove', (event) => { this.mousemoveHandle(event) });
-            document.addEventListener('click', (event) => { this.documentClickHandle(event) });
-
-            let polylines: Array<HTMLElement> = Array.prototype.slice.call(document.getElementsByTagName('polyline'));
-            polylines.forEach(function (polyline, index) {
-                polyline.addEventListener('click', (event) => { this.clickHandle(event); });
+            let svgDraggables: Array<HTMLElement> = Array.prototype.slice.call(document.getElementsByClassName('svg-draggable'));
+            svgDraggables.forEach(function (svgDraggable, index) {
+                svgDraggable.addEventListener('click', (event) => this.onSVGDraggableMousedown(event, this.svgObject));
             }, this);
         }
         private mousemoveHandle(event: MouseEvent): any {
@@ -22,16 +20,49 @@
             xMouse.innerHTML = event.clientX.toString();
             yMouse.innerHTML = event.clientY.toString();
         }
-        private clickHandle(event: MouseEvent): any {
-            this.selectedPolyline = (<HTMLElement>event.currentTarget);
-            let objectId = this.selectedPolyline.parentNode.attributes['id'].value;
-            (<HTMLElement>document.querySelector(`[href="#${objectId}"][class="selected"`)).style.display = 'block';
+        // Sets the starting upperleft corner of SVG element to calculate assist with calculating drag
+        private onSVGDraggableMousedown(event: MouseEvent, svgObject: SVGObject) {
+            let svg = (<any>event.currentTarget).closest('svg');
+            let offset = svg.getBoundingClientRect();
+
+            let pt = svg.createSVGPoint();
+            pt.x = event.clientX; pt.y = event.clientY;
+            let startPoint = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+            svgObject.xDistance = startPoint.x - offset.left;
+            svgObject.yDistance = startPoint.y - offset.top;
+
+            (<HTMLElement>event.currentTarget).addEventListener('mousemove', this.onSVGDraggableMousemove.bind(svgObject));
         }
-        private documentClickHandle(event: MouseEvent): any {
-            let selectObject = (<HTMLElement>event.currentTarget);
-            if (this.selectedPolyline !== selectObject) {
-                let selectedIndicatorsShowing = <HTMLElement>document.querySelector('[display="block"][class="selected"]');
+        private onSVGDraggableMousemove(event: MouseEvent) {
+            let g = <any>event.currentTarget;
+            let svg = g.closest('svg');
+            let offset = svg.getBoundingClientRect();
+            let pt = svg.createSVGPoint();
+            pt.x = event.clientX; pt.y = event.clientY;
+            let svgCursorLocation = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+            // Use loc.x and loc.y here
+            if (!g.transform.baseVal.length) {
+                var newTransform = svg.createSVGTransform();
+                newTransform.setTranslate(offset.left, offset.top);
+                g.transform.baseVal.appendItem(newTransform);
+            } else {
+                g.transform.baseVal.getItem(0).setTranslate(svgCursorLocation.x - this.svgObject.xDistance, svgCursorLocation.y - this.svgObject.yDistance);
             }
         }
+        private cursorPoint(event: MouseEvent, svg: any) {
+            var pt = svg.createSVGPoint();
+            pt.x = event.clientX; pt.y = event.clientY;
+            return pt.matrixTransform(svg.getScreenCTM().inverse());
+        }
+        private removeEventHandler(pressureSVG: HTMLElement, eventFunction: any) {
+            pressureSVG.removeEventListener('mousemove', eventFunction);
+        }
+    }
+
+    class SVGObject {
+        xDistance: number;
+        yDistance: number;
     }
 }
