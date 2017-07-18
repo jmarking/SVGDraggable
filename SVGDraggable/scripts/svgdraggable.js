@@ -47,7 +47,7 @@ var SVGDraggable;
             // Use loc.x and loc.y here
             if (g.transform.baseVal.numberOfItems == 0) {
                 var newTransform = svg.createSVGTransform();
-                newTransform.setTranslate(offset.left, offset.top);
+                newTransform.setTranslate(0, 0);
                 g.transform.baseVal.appendItem(newTransform);
             }
             else {
