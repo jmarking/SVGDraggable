@@ -1,7 +1,8 @@
 ﻿module SVGDraggable {
     export class Drag {
         svgObject: SVGObject;
-        onMousemove = (event: MouseEvent) => { this.onSVGDraggableMousemove(event); }
+        onMousemove = (event: MouseEvent) => { this.onSVGDraggableMousemove(event, this.svgObject); }
+        runOnce: boolean = false;
 
         constructor() {
             this.svgObject = new SVGObject();
@@ -18,14 +19,20 @@
         // Sets the starting upperleft corner of SVG element to calculate assist with calculating drag
         private onSVGDraggableMousedown(event: MouseEvent, svgObject: SVGObject) {
             let svg = (<SVGElement>event.currentTarget).closest('svg');
-            let offset = svg.getBoundingClientRect();
 
             let pt = (<SVGSVGElement>svg).createSVGPoint();
-            pt.x = event.clientX; pt.y = event.clientY;
+            pt.x = event.clientX;
+            pt.y = event.clientY;
             let startPoint = pt.matrixTransform((<SVGSVGElement>svg).getScreenCTM().inverse());
 
-            svgObject.xDistance = startPoint.x - offset.left;
-            svgObject.yDistance = startPoint.y - offset.top;
+            svgObject.startMoveX = startPoint.x;
+            svgObject.startMoveY = startPoint.y;
+
+            if (!this.runOnce) {
+                svgObject.initialX = startPoint.x;
+                svgObject.initialY = startPoint.y;
+                this.runOnce = true;
+            }
 
             (<HTMLElement>event.currentTarget).addEventListener('mousemove', this.onMousemove);
             (<SVGElement>event.currentTarget).setAttribute('hasMouseMoveEvent', 'true');
@@ -35,30 +42,43 @@
             if (svgDraggables) {
                 svgDraggables.removeEventListener('mousemove', this.onMousemove);
                 svgDraggables.setAttribute('hasMouseMoveEvent', 'false');
+
+                this.svgObject.newX = this.svgObject.endX;
+                this.svgObject.newY = this.svgObject.endY;
             }
         }
-        private onSVGDraggableMousemove(event: MouseEvent) {
+        private onSVGDraggableMousemove(event: MouseEvent, svgObject: SVGObject) {
             let g = <any>event.currentTarget;
             let svg = g.closest('svg');
-            let offset = svg.getBoundingClientRect();
 
             let pt = svg.createSVGPoint();
-            pt.x = event.clientX; pt.y = event.clientY;
+            pt.x = event.clientX;
+            pt.y = event.clientY;
             let svgCursorLocation = pt.matrixTransform(svg.getScreenCTM().inverse());
 
-            // Use loc.x and loc.y here
+            let mouseMoveX = svgCursorLocation.x - svgObject.startMoveX;
+            let mouseMoveY = svgCursorLocation.y - svgObject.startMoveY;
+
             if (g.transform.baseVal.numberOfItems == 0) {
                 var newTransform = svg.createSVGTransform();
-                newTransform.setTranslate(0, 0);
+                newTransform.setTranslate(mouseMoveX, mouseMoveY);
                 g.transform.baseVal.appendItem(newTransform);
             } else {
-                g.transform.baseVal.getItem(0).setTranslate(svgCursorLocation.x - this.svgObject.xDistance, svgCursorLocation.y - this.svgObject.yDistance);
+                g.transform.baseVal.getItem(0).setTranslate(mouseMoveX + svgObject.newX, mouseMoveY + svgObject.newY);
+                svgObject.endX = mouseMoveX + svgObject.newX;
+                svgObject.endY = mouseMoveY + svgObject.newY;
             }
         }
     }
 
     class SVGObject {
-        xDistance: number;
-        yDistance: number;
+        newX: number = 0;
+        newY: number = 0;
+        endX: number;
+        endY: number;
+        startMoveX: number;
+        startMoveY: number;
+        initialX: number;
+        initialY: number;
     }
 }
