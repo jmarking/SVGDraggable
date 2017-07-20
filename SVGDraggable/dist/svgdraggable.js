@@ -10,7 +10,7 @@ var SVGDraggable;
         }
         Drag.prototype.registerEvents = function () {
             var _this = this;
-            var svgDraggables = Array.prototype.slice.call(document.getElementsByClassName('svg-draggable'));
+            var svgDraggables = Array.prototype.slice.call(document.querySelectorAll('svg [draggable = "true"]'));
             svgDraggables.forEach(function (svgDraggable, index) {
                 var _this = this;
                 svgDraggable.addEventListener('mousedown', function (event) { return _this.onSVGDraggableMousedown(event, _this.svgObject); });
@@ -19,11 +19,12 @@ var SVGDraggable;
         };
         // Sets the starting upperleft corner of SVG element to calculate assist with calculating drag
         Drag.prototype.onSVGDraggableMousedown = function (event, svgObject) {
-            var svg = event.currentTarget.closest('svg');
-            var pt = svg.createSVGPoint();
-            pt.x = event.clientX;
-            pt.y = event.clientY;
-            var startPoint = pt.matrixTransform(svg.getScreenCTM().inverse());
+            var svg = this.svgElement = event.currentTarget;
+            var svgSvg = svg;
+            var svgPoint = svgSvg.createSVGPoint();
+            svgPoint.x = event.clientX;
+            svgPoint.y = event.clientY;
+            var startPoint = svgPoint.matrixTransform(svgSvg.getScreenCTM().inverse());
             svgObject.startMoveX = startPoint.x;
             svgObject.startMoveY = startPoint.y;
             if (!this.runOnce) {
@@ -31,29 +32,29 @@ var SVGDraggable;
                 svgObject.initialY = startPoint.y;
                 this.runOnce = true;
             }
-            event.currentTarget.addEventListener('mousemove', this.onMousemove);
-            event.currentTarget.setAttribute('hasMouseMoveEvent', 'true');
+            svg.addEventListener('mousemove', this.onMousemove);
         };
         Drag.prototype.onMouseup = function (event) {
-            var svgDraggables = document.querySelector('[class="svg-draggable"][hasMouseMoveEvent="true"]');
-            if (svgDraggables) {
-                svgDraggables.removeEventListener('mousemove', this.onMousemove);
-                svgDraggables.setAttribute('hasMouseMoveEvent', 'false');
+            if (this.svgElement) {
+                this.svgElement.removeEventListener('mousemove', this.onMousemove);
+                this.svgElement.setAttribute('hasMouseMoveEvent', 'false');
                 this.svgObject.newX = this.svgObject.endX;
                 this.svgObject.newY = this.svgObject.endY;
             }
+            this.svgElement = undefined;
         };
         Drag.prototype.onSVGDraggableMousemove = function (event, svgObject) {
-            var g = event.currentTarget;
-            var svg = g.closest('svg');
-            var pt = svg.createSVGPoint();
+            var svg = event.currentTarget;
+            var svgSvg = svg;
+            var g = svg.querySelector('g');
+            var pt = svgSvg.createSVGPoint();
             pt.x = event.clientX;
             pt.y = event.clientY;
-            var svgCursorLocation = pt.matrixTransform(svg.getScreenCTM().inverse());
+            var svgCursorLocation = pt.matrixTransform(svgSvg.getScreenCTM().inverse());
             var mouseMoveX = svgCursorLocation.x - svgObject.startMoveX;
             var mouseMoveY = svgCursorLocation.y - svgObject.startMoveY;
             if (g.transform.baseVal.numberOfItems == 0) {
-                var newTransform = svg.createSVGTransform();
+                var newTransform = svgSvg.createSVGTransform();
                 newTransform.setTranslate(mouseMoveX, mouseMoveY);
                 g.transform.baseVal.appendItem(newTransform);
             }

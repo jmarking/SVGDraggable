@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="dist\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
