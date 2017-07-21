@@ -11,7 +11,7 @@
             if (svgElements.length) {
                 this.svgDraggableObjects = new Array<SVGObject>();
                 svgElements.forEach(function (svgElement: SVGElement, index: number) {
-                    this.svgDraggableObjects.push(new SVGObject(svgElement));
+                    this.svgDraggableObjects.push(new SVGObject(svgElement, index));
                 }, this);
             }
         }
