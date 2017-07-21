@@ -1,4 +1,7 @@
 ﻿module SVGDraggable {
+    interface IDrag {
+        justTesting: string;
+    }
     export class Drag {
         svgObject: SVGObject;
         onMousemove = (event: MouseEvent) => { this.onSVGDraggableMousemove(event, this.svgObject); }
@@ -6,8 +9,8 @@
         svgElement: SVGElement;
 
         constructor() {
-            this.svgObject = new SVGObject();
-            this.registerEvents();
+            //this.svgObject = new SVGObject();
+            //this.registerEvents();
         }
 
         private registerEvents() {
@@ -73,7 +76,8 @@
         }
     }
 
-    class SVGObject {
+    export class SVGObject {
+        private readonly svgElement: SVGElement;
         newX: number = 0;
         newY: number = 0;
         endX: number;
@@ -82,5 +86,9 @@
         startMoveY: number;
         initialX: number;
         initialY: number;
+
+        constructor(element: SVGElement) {
+            this.svgElement = element;
+        }
     }
 }

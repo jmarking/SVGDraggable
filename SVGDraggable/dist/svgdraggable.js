@@ -1,12 +1,31 @@
 var SVGDraggable;
 (function (SVGDraggable) {
+    var SVGController = (function () {
+        function SVGController() {
+            this.loadSvgDraggables();
+        }
+        SVGController.prototype.loadSvgDraggables = function () {
+            var svgElements = Array.prototype.slice.call(document.querySelectorAll('svg [draggable="true"]'));
+            if (svgElements.length) {
+                this.svgDraggableObjects = new Array();
+                svgElements.forEach(function (svgElement, index) {
+                    this.svgDraggableObjects.push(new SVGDraggable.SVGObject(svgElement));
+                }, this);
+            }
+        };
+        return SVGController;
+    }());
+    SVGDraggable.SVGController = SVGController;
+})(SVGDraggable || (SVGDraggable = {}));
+var SVGDraggable;
+(function (SVGDraggable) {
     var Drag = (function () {
         function Drag() {
             var _this = this;
             this.onMousemove = function (event) { _this.onSVGDraggableMousemove(event, _this.svgObject); };
             this.runOnce = false;
-            this.svgObject = new SVGObject();
-            this.registerEvents();
+            //this.svgObject = new SVGObject();
+            //this.registerEvents();
         }
         Drag.prototype.registerEvents = function () {
             var _this = this;
@@ -68,11 +87,13 @@ var SVGDraggable;
     }());
     SVGDraggable.Drag = Drag;
     var SVGObject = (function () {
-        function SVGObject() {
+        function SVGObject(element) {
             this.newX = 0;
             this.newY = 0;
+            this.svgElement = element;
         }
         return SVGObject;
     }());
+    SVGDraggable.SVGObject = SVGObject;
 })(SVGDraggable || (SVGDraggable = {}));
 //# sourceMappingURL=svgdraggable.js.map
