@@ -2,29 +2,11 @@
     fill: none;
 }
 
-.node {
-    display: none;
+svg[draggable="true"] {
+    cursor: move;
 }
 
-use {
-}
-
-    use:hover {
-        cursor: pointer;
-    }
-
-    use.line {
-        stroke: black;
-        stroke-width: 7;
-    }
-
-    use.selected {
-        display: none;
-        stroke: red;
-        stroke-width: 10;
-        stroke-dasharray: 10 5;
-    }
-
-circle.node {
-    fill: blue;
+circle.polyline-point:hover {
+    opacity: .5;
+    cursor: default;
 }

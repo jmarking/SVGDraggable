@@ -2,6 +2,7 @@
     export class SVGObject {
         private readonly id: number;
         private readonly svgElement: SVGElement;
+        private readonly parentElement: Node;
         private newX: number = 0;
         private newY: number = 0;
         private endX: number;
@@ -18,6 +19,7 @@
 
         constructor(element: SVGElement, id: number) {
             this.svgElement = element;
+            this.parentElement = element.closest('svg[dropzone]');
             this.id = id;
             this.registerEvents();
         }
@@ -27,6 +29,7 @@
             window.addEventListener('mouseup', this.mouseupHandler);
         }
         private mousedown(event: MouseEvent) {
+            this.parentElement.appendChild(this.svgElement);
             this.activeDrag = true;
             let svgSvg = <SVGSVGElement>this.svgElement;
 

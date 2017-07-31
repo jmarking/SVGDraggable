@@ -1,24 +1,5 @@
 var SVGDraggable;
 (function (SVGDraggable) {
-    var SVGController = (function () {
-        function SVGController() {
-            this.loadSvgDraggables();
-        }
-        SVGController.prototype.loadSvgDraggables = function () {
-            var svgElements = Array.prototype.slice.call(document.querySelectorAll('svg [draggable="true"]'));
-            if (svgElements.length) {
-                this.svgDraggableObjects = new Array();
-                svgElements.forEach(function (svgElement, index) {
-                    this.svgDraggableObjects.push(new SVGDraggable.SVGObject(svgElement, index));
-                }, this);
-            }
-        };
-        return SVGController;
-    }());
-    SVGDraggable.SVGController = SVGController;
-})(SVGDraggable || (SVGDraggable = {}));
-var SVGDraggable;
-(function (SVGDraggable) {
     var SVGObject = (function () {
         function SVGObject(element, id) {
             var _this = this;
@@ -30,6 +11,7 @@ var SVGDraggable;
             this.mouseupHandler = function (event) { _this.mouseup(event); };
             this.activeDrag = false;
             this.svgElement = element;
+            this.parentElement = element.closest('svg[dropzone]');
             this.id = id;
             this.registerEvents();
         }
@@ -38,6 +20,7 @@ var SVGDraggable;
             window.addEventListener('mouseup', this.mouseupHandler);
         };
         SVGObject.prototype.mousedown = function (event) {
+            this.parentElement.appendChild(this.svgElement);
             this.activeDrag = true;
             var svgSvg = this.svgElement;
             var svgPoint = svgSvg.createSVGPoint();
@@ -85,5 +68,24 @@ var SVGDraggable;
         return SVGObject;
     }());
     SVGDraggable.SVGObject = SVGObject;
+})(SVGDraggable || (SVGDraggable = {}));
+var SVGDraggable;
+(function (SVGDraggable) {
+    var SVGController = (function () {
+        function SVGController() {
+            this.loadSvgDraggables();
+        }
+        SVGController.prototype.loadSvgDraggables = function () {
+            var svgElements = Array.prototype.slice.call(document.querySelectorAll('svg [draggable="true"]'));
+            if (svgElements.length) {
+                this.svgDraggableObjects = new Array();
+                svgElements.forEach(function (svgElement, index) {
+                    this.svgDraggableObjects.push(new SVGDraggable.SVGObject(svgElement, index));
+                }, this);
+            }
+        };
+        return SVGController;
+    }());
+    SVGDraggable.SVGController = SVGController;
 })(SVGDraggable || (SVGDraggable = {}));
 //# sourceMappingURL=svgdraggable.js.map

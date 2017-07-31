@@ -1,0 +1,21 @@
+﻿#toolbar {
+    height: 7%;
+    width: 100%;
+    border-bottom: 1px #000000 solid;
+    overflow: hidden;
+    position: relative;
+    min-height: 50px;
+    margin: 0;
+    padding: 0;
+}
+
+.toolbar-btn {
+    width: 50px;
+    height: 90%;
+    display: inline-block;
+    background-color: white;
+    margin: 2px 5px 0 5px;
+    box-sizing: border-box;
+    border: 1px #c4bcbc solid;
+    padding: 0;
+}
