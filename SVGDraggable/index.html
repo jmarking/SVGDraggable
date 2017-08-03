@@ -5,6 +5,8 @@
     <link href="content/layout.css" rel="stylesheet" />
     <link href="content/svg.css" rel="stylesheet" />
     <link href="content/toolbar.css" rel="stylesheet" />
+    <script>
+    </script>
 </head>
 <body>
     <header>
@@ -21,25 +23,30 @@
                         <circle cx="50%" cy="50%" r="20" stroke="red" stroke-width="5" fill="white"></circle>
                     </svg>
                 </div>
-                <div class="toolbar-btn"></div>
-                <div class="toolbar-btn"></div>
+                <div class="toolbar-btn">
+                    <img src="./images/pressuregauge.svg" style="height:100%;width:100%;" />
+                </div>
+                <div class="toolbar-btn" title="Create SVG Polyline">
+                    <img src="./images/polyline.svg" style="height:100%;width:100%;" />
+                </div>
                 <div class="toolbar-btn"></div>
                 <div class="toolbar-btn"></div>
                 <div class="toolbar-btn"></div>
             </div>
             <div id="svgcanvas">
-                <svg height="100%" width="100%" dropzone="false">
-                    <svg draggable="true" style="width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                <svg id="svg-main" height="100%" width="100%" droppable="true"></svg>
+                <!--<svg height="100%" width="100%" droppable="true">
+                    <svg draggable="true" test="false" style="width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
                         <g>
                             <rect class="selection" x="190" y="240" height="120" width="320" stroke="#aaa" fill="#fff" stroke-width="5" stroke-opacity=".75" stroke-dasharray="15" fill-opacity="0"></rect>
-                            <polyline points="200 250 300 250 300 350 500 350" stroke="orange" stroke-width="5"></polyline>
+                            <polyline points="200,250 300,250 300,350 500,350" stroke="orange" stroke-width="5"></polyline>
                             <circle class="polyline-point" cx="200" cy="250" r="10" fill="blue" opacity="0"></circle>
                             <circle class="polyline-point" cx="300" cy="250" r="10" fill="blue" opacity="0"></circle>
                             <circle class="polyline-point" cx="300" cy="350" r="10" fill="blue" opacity="0"></circle>
                             <circle class="polyline-point" cx="500" cy="350" r="10" fill="blue" opacity="0"></circle>
                         </g>
                     </svg>
-                    <svg draggable="true" style="width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                    <svg draggable="true" test="true" style="width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
                         <defs></defs>
                         <g>
                             <g>
@@ -106,13 +113,24 @@
                         </g>
                     </svg>
                     <svg draggable="true" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" style="height: 100%; width: 100%;"><g><circle cx="429" cy="554" r="50" stroke="red" stroke-width="5" fill="white"></circle></g></svg>
-                </svg>
+                </svg>-->
             </div>
         </section>
     </main>
     <script src="scripts/polyfills/element.closest.js"></script>
+    <script src="node_modules/whatwg-fetch/fetch.js"></script>
+    <script src="node_modules/promise-polyfill/promise.min.js"></script>
     <script src="dist/svgdraggable.js"></script>
-    <script>
+    <!--<script>
+        function isIE() {
+            return /Trident\/|MSIE/.test(window.navigator.userAgent);
+        }
+        if (isIE()) {
+            var scriptLoader = new SVGDraggable.ScriptLoader(["scripts/polyfills/element.closest.js", "node_modules/whatwg-fetch/fetch.js", "node_modules/promise-polyfill/promise.min.js"]);
+            scriptLoader.loadFiles();
+        }
+    </script>-->
+    <!--<script>
         window.onload = function () {
             //var drag = new SVGDraggable.Drag();
             var svgController = new SVGDraggable.SVGController();
@@ -142,8 +160,8 @@
 
             var circleButton = document.getElementById('circle-button');
             circleButton.addEventListener('mousedown', function (event) {
-                var dropZone = document.querySelector('svg[dropzone]');
-                dropZone.addEventListener('mouseup', function (event) {
+                var droppable = document.querySelector('svg[droppable]');
+                droppable.addEventListener('mouseup', function (event) {
                     var newSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                     newSvg.setAttribute('height', '100%');
                     newSvg.setAttribute('width', '100%');
@@ -153,10 +171,10 @@
                     newSvg.setAttribute('version', '1.1');
 
 
-                    var svgPoint = dropZone.createSVGPoint();
+                    var svgPoint = droppable.createSVGPoint();
                     svgPoint.x = event.clientX;
                     svgPoint.y = event.clientY;
-                    var startPoint = svgPoint.matrixTransform(dropZone.getScreenCTM().inverse());
+                    var startPoint = svgPoint.matrixTransform(droppable.getScreenCTM().inverse());
 
                     var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                     var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -168,10 +186,57 @@
                     circle.setAttribute('fill', 'white');
                     g.appendChild(circle);
                     newSvg.appendChild(g);
-                    dropZone.appendChild(newSvg);
+                    droppable.appendChild(newSvg);
+                });
+            });
+
+
+            var polylineCircles = document.getElementsByClassName('polyline-point');
+            var polyline = polylineCircles[0].parentNode.getElementsByTagName('polyline')[0];
+            var droppable = document.querySelector('svg[droppable]');
+            polylineCircles[0].addEventListener('pointerdown', function () {
+                var pointToUpdate;
+                var circle = this;
+                for (var i = 0; i < polyline.points.numberOfItems; i++) {
+                    var point = polyline.points.getItem(i);
+                    if (point.x == this.getAttribute('cx') && point.y == this.getAttribute('cy')) {
+                        pointToUpdate = point;
+                        break;
+                    };
+                };
+                droppable.addEventListener('pointermove', function (event) {
+                    var transformValues = circle.getCTM();
+                    var svgPoint = droppable.createSVGPoint();
+                    svgPoint.x = event.clientX;
+                    svgPoint.y = event.clientY;
+                    var startPoint = svgPoint.matrixTransform(droppable.getScreenCTM().inverse());
+                    var newX = startPoint.x - transformValues.e;
+                    var newY = startPoint.y - transformValues.f;
+                    pointToUpdate.x = newX;
+                    pointToUpdate.y = newY;
+                    circle.setAttribute('cx', newX);
+                    circle.setAttribute('cy', newY);
                 });
             });
         };
+    </script>-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var toolbar = new SVGDraggable.ToolbarController(document.querySelector('#svg-main'));
+            var mainSvg = document.getElementById('svgcanvas').childNodes[1];
+            fetch('http://localhost:6929/images/pressuregauge.svg').then(function (response) {
+                response.text().then(function (html) {
+                    var blah = new DOMParser().parseFromString(html, 'image/svg+xml');
+                    x = blah.getElementsByTagName('svg');
+                    var h = mainSvg.clientHeight;
+                    var w = mainSvg.clientWidth;
+                    x[0].setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+                    x[0].setAttribute('preserveAspectRatio', 'xMinYMin meet');
+                    mainSvg.appendChild(blah.childNodes[0]);
+                    var svgController = new SVGDraggable.SVGController();
+                });
+            });
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,7 @@
+﻿<svg height="100%" width="100%" viewBox="180 420 140 85" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+    <polyline points="250,500 300,475 200,450 250,425" stroke="black" stroke-width="3" fill="white"></polyline>
+    <rect height="10" width="10" x="245" y="495" stroke="black" stroke-width="3" fill="white"></rect>
+    <rect height="10" width="10" x="295" y="470" stroke="black" stroke-width="3" fill="white"></rect>
+    <rect height="10" width="10" x="195" y="445" stroke="black" stroke-width="3" fill="white"></rect>
+    <rect height="10" width="10" x="245" y="420" stroke="black" stroke-width="3" fill="white"></rect>
+</svg>
