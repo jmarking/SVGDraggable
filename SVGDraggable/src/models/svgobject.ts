@@ -30,13 +30,8 @@
             window.addEventListener('mouseup', this.mouseupHandler);
         }
         private mousedown(event: MouseEvent) {
-            if (event.currentTarget instanceof SVGElement && event.currentTarget.hasAttribute('test')) {
-                let draggable: string | False = event.currentTarget.getAttribute('test');
-                console.log(draggable);
-            }
             let svgElement: SVGElement = <SVGElement>event.currentTarget;
             svgElement.ownerSVGElement.appendChild(svgElement);
-            //this.parentElement.appendChild(this.svgElement);
             this.activeDrag = true;
             let svgSvg = <SVGSVGElement>this.svgElement;
 
