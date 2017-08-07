@@ -2,8 +2,7 @@
     export interface IPolyline {
         removeEvents(): void;
     }
-    export class Polyline implements IPolyline {
-        readonly svgCanvas: SVGSVGElement;
+    export class Polyline extends Shape implements IPolyline {
         readonly rect: IRect;
         private g: SVGGElement;
         private polyline: SVGPolylineElement | False;
@@ -18,8 +17,8 @@
         private onPointerUp = (event: MouseEvent) => { this.pointerUp(event) };
 
         constructor(svgCanvas: SVGSVGElement) {
+            super(svgCanvas);
             this.rect = new Rect();
-            this.svgCanvas = svgCanvas;
             this.loadEvents();
         }
 

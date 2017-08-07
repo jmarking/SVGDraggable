@@ -1,9 +1,10 @@
-﻿module SVGDraw {
+﻿/// <reference path="shape.ts" />
+
+module SVGDraw {
     export interface ICircle {
         removeEvents(): void;
     }
-    export class Circle {
-        readonly svgCanvas: SVGSVGElement;
+    export class Circle extends Shape implements ICircle {
         private circle: SVGCircleElement;
         private circles: Array<SVGCircleElement> = new Array();
         private cx: number;
@@ -13,7 +14,7 @@
         private onPointerMove = (event: MouseEvent) => { this.pointerMove(event) };
 
         constructor(svgCanvas: SVGSVGElement) {
-            this.svgCanvas = svgCanvas;
+            super(svgCanvas);
             this.loadEvents();
         }
 
@@ -57,9 +58,9 @@
             circle.setAttribute('cx', `${point.x}`);
             circle.setAttribute('cy', `${point.y}`);
             circle.setAttribute('r', '0');
-            circle.setAttribute('fill', 'white');
             circle.setAttribute('stroke', 'red');
             circle.setAttribute('stroke-width', '3');
+            circle.setAttribute('fill', 'none');
             this.cx = point.x;
             this.cy = point.y;
             this.circle = circle;

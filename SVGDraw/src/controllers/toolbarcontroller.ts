@@ -1,5 +1,6 @@
 ﻿module SVGDraw {
     export class ToolbarController {
+        readonly svgController: SVGCanvasController;
         svgCanvas: SVGSVGElement;
         polyline: IPolyline | False;
         circle: ICircle;
@@ -8,11 +9,12 @@
         toolbarButtons: Array<HTMLElement>;
         private onClick = (event: MouseEvent) => { this.click(event) };
 
-        constructor(svgCanvas: SVGSVGElement) {
-            this.svgCanvas = svgCanvas;
+        constructor(svgController: SVGCanvasController) {
+            this.svgController = svgController;
+            //this.svgCanvas = svgCanvas;
             let mocks: { [id: string]: () => any } = {}
             this.toolbarButtons = Array.prototype.slice.call(document.getElementsByClassName('toolbar-btn'));
-            this.loadEvents()
+            this.loadEvents();
         }
 
         private loadEvents() {
@@ -44,13 +46,13 @@
         private buttonOff(buttonType: string): void {
             switch (buttonType) {
                 case 'polyline':
-                    (<IPolyline>this.polyline).removeEvents();
+                    //(<IPolyline>this.polyline).removeEvents();
                     break;
                 case 'pressuregauge':
-                    this.gauge.removeEvents();
+                    //this.gauge.removeEvents();
                     break;
                 case 'circle':
-                    this.circle.removeEvents();
+                    //this.circle.removeEvents();
                     break;
                 default:
                     break;
@@ -59,13 +61,19 @@
         private buttonOn(buttonType: string): void {
             switch (buttonType) {
                 case 'polyline':
-                    this.polyline = new Polyline(this.svgCanvas);
+                    let p = new Polyline(this.svgCanvas);
+                    this.svgController.createSVGShape(Polyline);
+                    //this.svgController.createSVGShape(Polyline);
+                    //this.polyline = new Polyline(this.svgCanvas);
                     break;
                 case 'pressuregauge':
-                    this.gauge = new Gauge(this.svgCanvas);
+                    this.svgController.test(Rect);
+                    //this.gauge = new Gauge(this.svgCanvas);
                     break;
                 case 'circle':
-                    this.circle = new Circle(this.svgCanvas);
+                    this.svgController.test(Circle);
+                    //this.svgController.createSVGShape(Circle);
+                    //this.circle = new Circle(this.svgCanvas);
                     break;
                 default:
                     break;

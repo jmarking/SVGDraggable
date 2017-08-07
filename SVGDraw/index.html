@@ -143,7 +143,9 @@
         };
     </script>-->
     <script>
-        var toolbar = new SVGDraw.ToolbarController(document.querySelector('#svg-main'));
+        var svgCanvas = document.querySelector('#svg-main');
+        var svgCanvasController = new SVGDraw.SVGCanvasController(svgCanvas);
+        var toolbarController = new SVGDraw.ToolbarController(svgCanvasController);
     </script>
 </body>
 </html>
