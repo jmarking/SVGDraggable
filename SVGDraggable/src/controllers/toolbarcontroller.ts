@@ -1,4 +1,4 @@
-﻿module SVGDraggable {
+﻿module SVGDraw {
     export class ToolbarController {
         svgCanvas: SVGSVGElement;
         polyline: IPolyline | False;

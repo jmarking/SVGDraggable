@@ -2,7 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "sourceMap": true,
-    "outFile": "./dist/svgdraggable.js",
+    "outFile": "./dist/svgdraw.js",
     "target": "es2015"
   }
 }

@@ -1,4 +1,4 @@
-﻿module SVGDraggable {
+﻿module SVGDraw {
     export class SVGObject {
         private readonly id: number;
         private readonly svgElement: SVGElement;

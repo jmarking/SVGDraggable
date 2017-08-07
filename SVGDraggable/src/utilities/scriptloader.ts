@@ -1,4 +1,4 @@
-﻿module SVGDraggable {
+﻿module SVGDraw {
     export class ScriptLoader {
         private m_js_files: string[];
         private m_css_files: string[];

@@ -1,4 +1,4 @@
-﻿module SVGDraggable {
+﻿module SVGDraw {
     interface IEventHandler {
     }
     class EventHandler {

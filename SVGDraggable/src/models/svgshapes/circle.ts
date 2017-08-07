@@ -1,4 +1,4 @@
-﻿module SVGDraggable {
+﻿module SVGDraw {
     export interface ICircle {
         removeEvents(): void;
     }

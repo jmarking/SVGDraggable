@@ -1,17 +1,17 @@
-﻿module SVGDraggable {
+﻿module SVGDraw {
     export class SVGController {
-        svgDraggableObjects: Array<SVGObject>;
+        svgObjects: Array<SVGObject>;
 
         constructor() {
-            this.loadSvgDraggables();
+            this.loadSvgObjects();
         }
 
-        private loadSvgDraggables() {
+        private loadSvgObjects() {
             let svgElements: Array<SVGElement> = Array.prototype.slice.call(document.querySelectorAll('svg [draggable="true"]'));
             if (svgElements.length) {
-                this.svgDraggableObjects = new Array<SVGObject>();
+                this.svgObjects = new Array<SVGObject>();
                 svgElements.forEach(function (svgElement: SVGElement, index: number) {
-                    this.svgDraggableObjects.push(new SVGObject(svgElement, index));
+                    this.svgObjects.push(new SVGObject(svgElement, index));
                 }, this);
             }
         }

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
-namespace SVGDraggable
+namespace SVGDraw
 {
     public class Program
     {

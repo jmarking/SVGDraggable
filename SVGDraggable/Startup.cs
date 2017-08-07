@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.FileProviders;
 
-namespace SVGDraggable
+namespace SVGDraw
 {
     public class Startup
     {

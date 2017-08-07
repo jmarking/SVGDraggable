@@ -42,20 +42,20 @@
     <script src="scripts/polyfills/element.closest.js"></script>
     <script src="node_modules/whatwg-fetch/fetch.js"></script>
     <script src="node_modules/promise-polyfill/promise.min.js"></script>
-    <script src="dist/svgdraggable.js"></script>
+    <script src="dist/svgdraw.js"></script>
     <!--<script>
         function isIE() {
             return /Trident\/|MSIE/.test(window.navigator.userAgent);
         }
         if (isIE()) {
-            var scriptLoader = new SVGDraggable.ScriptLoader(["scripts/polyfills/element.closest.js", "node_modules/whatwg-fetch/fetch.js", "node_modules/promise-polyfill/promise.min.js"]);
+            var scriptLoader = new SVGDraw.ScriptLoader(["scripts/polyfills/element.closest.js", "node_modules/whatwg-fetch/fetch.js", "node_modules/promise-polyfill/promise.min.js"]);
             scriptLoader.loadFiles();
         }
     </script>-->
     <!--<script>
         window.onload = function () {
-            //var drag = new SVGDraggable.Drag();
-            var svgController = new SVGDraggable.SVGController();
+            //var drag = new SVGDraw.Drag();
+            var svgController = new SVGDraw.SVGController();
 
             var tid = setInterval(mycode, 2000);
             var rotate = 0;
@@ -143,7 +143,7 @@
         };
     </script>-->
     <script>
-        var toolbar = new SVGDraggable.ToolbarController(document.querySelector('#svg-main'));
+        var toolbar = new SVGDraw.ToolbarController(document.querySelector('#svg-main'));
     </script>
 </body>
 </html>
