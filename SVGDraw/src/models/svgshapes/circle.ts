@@ -1,7 +1,7 @@
 ﻿/// <reference path="shape.ts" />
 
 module SVGDraw {
-    export interface ICircle {
+    export interface ICircle extends IShape {
         removeEvents(): void;
     }
     export class Circle extends Shape implements ICircle {
@@ -86,6 +86,10 @@ module SVGDraw {
             svgPoint.x = event.clientX;
             svgPoint.y = event.clientY;
             return svgPoint.matrixTransform(this.svgCanvas.getScreenCTM().inverse());
+        }
+
+        protected handleStateChange() {
+            console.log(`handling state change from circle! State: ${this.canvasState}`);
         }
     }
 }

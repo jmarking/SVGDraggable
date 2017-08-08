@@ -1,18 +1,17 @@
 ﻿module SVGDraw {
     export class ToolbarController {
-        readonly svgController: SVGCanvasController;
-        svgCanvas: SVGSVGElement;
-        polyline: IPolyline | False;
-        circle: ICircle;
-        gauge: IGauge;
+        readonly svgCanvas: SVGSVGElement;
+        readonly polyline: IPolyline;
+        readonly circle: ICircle;
         readonly selected: string = 'selected';
-        toolbarButtons: Array<HTMLElement>;
+        readonly toolbarButtons: Array<HTMLElement>;
+
         private onClick = (event: MouseEvent) => { this.click(event) };
 
-        constructor(svgController: SVGCanvasController) {
-            this.svgController = svgController;
-            //this.svgCanvas = svgCanvas;
-            let mocks: { [id: string]: () => any } = {}
+        constructor(svgCanvas: SVGSVGElement) {
+            this.svgCanvas = svgCanvas;
+            this.polyline = new Polyline(svgCanvas);
+            this.circle = new Circle(svgCanvas);
             this.toolbarButtons = Array.prototype.slice.call(document.getElementsByClassName('toolbar-btn'));
             this.loadEvents();
         }
@@ -26,57 +25,50 @@
             let selectedToolbarButton: HTMLElement = <HTMLElement>event.currentTarget;
             let buttonType = selectedToolbarButton.getAttribute('data-button-type');
 
+            this.setSelected(selectedToolbarButton);
+            this.checkCanvasState(selectedToolbarButton);
+        }
+        private checkCanvasState(selectedButton: HTMLElement): void {
+            let isDraw: boolean = selectedButton.hasAttribute(this.selected) ? true : false;
             this.toolbarButtons.forEach(function (button, index) {
-                if (selectedToolbarButton !== button) {
+                let buttonType: string = button.getAttribute('data-button-type');
+                if (selectedButton !== button) {
+                    this.setCanvasState(buttonType, (isDraw ? 'none' : 'edit'));
+                }
+                else {
+                    this.setCanvasState(buttonType, (isDraw ? 'draw' : 'edit'));
+                }
+            }, this);
+        }
+        private setCanvasState(buttonType: string, canvasState: CanvasState): void {
+            switch (buttonType) {
+                case 'polyline':
+                    if (this.polyline.getCanvasState() !== canvasState)
+                        this.polyline.setCanvasState(canvasState);
+                    break;
+                case 'pressuregauge':
+                    break;
+                case 'circle':
+                    if (this.circle.getCanvasState() !== canvasState)
+                        this.circle.setCanvasState(canvasState);
+                    break;
+                default:
+                    break;
+            }
+        }
+        private setSelected(selectedButton: HTMLElement): void {
+            this.toolbarButtons.forEach(function (button, index) {
+                if (selectedButton !== button) {
                     if (button.hasAttribute(this.selected)) {
                         button.removeAttribute(this.selected);
-                        this.buttonOff(button.getAttribute('data-button-type'));
                     }
                 }
             }, this);
 
-            if (selectedToolbarButton.hasAttribute(this.selected)) {
-                selectedToolbarButton.removeAttribute(this.selected);
-                this.buttonOff(buttonType);
+            if (selectedButton.hasAttribute(this.selected)) {
+                selectedButton.removeAttribute(this.selected);
             } else {
-                this.buttonOn(buttonType);
-                selectedToolbarButton.setAttribute(this.selected, '');
-            }
-        }
-        private buttonOff(buttonType: string): void {
-            switch (buttonType) {
-                case 'polyline':
-                    //(<IPolyline>this.polyline).removeEvents();
-                    break;
-                case 'pressuregauge':
-                    //this.gauge.removeEvents();
-                    break;
-                case 'circle':
-                    //this.circle.removeEvents();
-                    break;
-                default:
-                    break;
-            }
-        }
-        private buttonOn(buttonType: string): void {
-            switch (buttonType) {
-                case 'polyline':
-                    let p = new Polyline(this.svgCanvas);
-                    this.svgController.createSVGShape(Polyline);
-                    //this.svgController.createSVGShape(Polyline);
-                    //this.polyline = new Polyline(this.svgCanvas);
-                    break;
-                case 'pressuregauge':
-                    this.svgController.test(Rect);
-                    //this.gauge = new Gauge(this.svgCanvas);
-                    break;
-                case 'circle':
-                    this.svgController.test(Circle);
-                    //this.svgController.createSVGShape(Circle);
-                    //this.circle = new Circle(this.svgCanvas);
-                    break;
-                default:
-                    break;
+                selectedButton.setAttribute(this.selected, '');
             }
         }
     }

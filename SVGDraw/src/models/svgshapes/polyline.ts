@@ -1,9 +1,7 @@
 ﻿module SVGDraw {
-    export interface IPolyline {
-        removeEvents(): void;
+    export interface IPolyline extends IShape {
     }
     export class Polyline extends Shape implements IPolyline {
-        readonly rect: IRect;
         private g: SVGGElement;
         private polyline: SVGPolylineElement | False;
         private polylines: Array<SVGPolylineElement> = new Array();
@@ -18,21 +16,8 @@
 
         constructor(svgCanvas: SVGSVGElement) {
             super(svgCanvas);
-            this.rect = new Rect();
-            this.loadEvents();
         }
 
-        public removeEvents(): void {
-            this.svgCanvas.removeEventListener('click', this.onClick);
-            this.svgCanvas.removeEventListener('contextmenu', this.onContextMenu);
-            //this.polylines.forEach(function (polyline, index) {
-            //    new SVGObject(polyline.ownerSVGElement, index);
-            //});
-        }
-        private loadEvents() {
-            this.svgCanvas.addEventListener('click', this.onClick);
-            this.svgCanvas.addEventListener('contextmenu', this.onContextMenu);
-        }
         private pointerMove(event: MouseEvent) {
             let transformValues = this.selectedRect.getCTM();
             let svgPoint = this.svgCanvas.createSVGPoint();
@@ -71,7 +56,6 @@
         }
         private click(event: MouseEvent) {
             let svgPoint = this.getSVGPoint(event);
-            //let rect = this.rect.createRectElement(svgPoint.x, svgPoint.y);
             if (!this.polyline || this.startNewLine) {
                 let svg = this.createSVGElement();
                 this.createGElement();
@@ -91,6 +75,7 @@
         }
         private createSVGElement(): SVGSVGElement {
             let svg: SVGSVGElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.classList.add('draw-state');
             svg.setAttribute('height', '100%');
             svg.setAttribute('width', '100%');
             svg.setAttribute('draggable', 'false');
@@ -112,16 +97,16 @@
         private createGElement(): void {
             this.g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         }
-        private createDefsElement(): SVGDefsElement {
-            return document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        }
-        private createUseElement(event: MouseEvent): SVGUseElement {
-            let use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-            let svgPoint = this.getSVGPoint(event);
-            use.setAttribute('x', `${svgPoint.x - 5}`);
-            use.setAttribute('y', `${svgPoint.y - 5}`);
-            return use;
-        }
+        //private createDefsElement(): SVGDefsElement {
+        //    return document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        //}
+        //private createUseElement(event: MouseEvent): SVGUseElement {
+        //    let use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        //    let svgPoint = this.getSVGPoint(event);
+        //    use.setAttribute('x', `${svgPoint.x - 5}`);
+        //    use.setAttribute('y', `${svgPoint.y - 5}`);
+        //    return use;
+        //}
         private createRectElement(event: MouseEvent): SVGRectElement {
             let rect: SVGRectElement = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             let svgPoint = this.getSVGPoint(event);
@@ -157,5 +142,33 @@
         private addPoint(event: MouseEvent) {
             (<SVGPolylineElement>this.polyline).points.appendItem(this.getSVGPoint(event));
         }
+
+        protected handleStateChange() {
+            switch (this.canvasState) {
+                case 'draw':
+                    this.handleDrawStateEvents();
+                    break;
+                case 'edit':
+                    this.handleEditStateEvents();
+                    break;
+                case 'none':
+                    break;
+                default:
+                    break;
+            }
+        }
+        private handleDrawStateEvents() {
+            this.svgCanvas.addEventListener('click', this.onClick);
+            this.svgCanvas.addEventListener('contextmenu', this.onContextMenu);
+        }
+        private handleEditStateEvents() {
+            this.svgCanvas.removeEventListener('click', this.onClick);
+            this.svgCanvas.removeEventListener('contextmenu', this.onContextMenu);
+        }
+    }
+    class PolylineObject {
+        svg: SVGSVGElement;
+        polyline: SVGPolylineElement;
+        nodes: Array<SVGRect>;
     }
 }
