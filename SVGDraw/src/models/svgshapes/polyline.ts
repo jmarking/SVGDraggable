@@ -3,7 +3,7 @@
     }
     export class Polyline extends Shape implements IPolyline {
         private g: SVGGElement;
-        private polyline: SVGPolylineElement | False;
+        private polyline: SVGPolylineElement;
         private polylines: Array<SVGPolylineElement> = new Array();
         private startNewLine: boolean = true;
         private selectedSVGPoint: SVGPoint;
@@ -50,6 +50,13 @@
         private pointerUp(event: MouseEvent) {
             this.svgCanvas.removeEventListener('pointermove', this.onPointerMove);
         }
+        private polylineSelect(event: MouseEvent) {
+            // hook events that can happen once selected.
+            // show selection graphic.
+            let svg = (<SVGPolylineElement>event.currentTarget).ownerSVGElement;
+            let polylineSelection = svg.querySelector('polyline.polyline-selection');
+            polylineSelection.setAttribute('stroke-opacity', '1');
+        }
         private contextMenu(event: MouseEvent) {
             event.preventDefault();
             this.startNewLine = true;
@@ -60,8 +67,10 @@
                 let svg = this.createSVGElement();
                 this.createGElement();
                 this.createPolylineElement(event);
+                let polylineSelection: SVGPolylineElement = this.createPolylineElementSelected(event);
                 let rect = this.createRectElement(event);
 
+                this.g.appendChild(polylineSelection);
                 this.g.appendChild(<SVGPolylineElement>this.polyline);
                 this.g.appendChild(rect);
                 svg.appendChild(this.g);
@@ -93,6 +102,18 @@
             this.polyline.setAttribute('stroke-width', '4');
             this.polyline.setAttribute('fill', 'white');
             this.polyline.setAttribute('fill-opacity', '0');
+        }
+        private createPolylineElementSelected(event: MouseEvent): SVGPolylineElement {
+            let polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            polyline.points.appendItem(this.getSVGPoint(event));
+            polyline.classList.add('polyline-selection');
+            polyline.setAttribute('stroke', '#ACACAC');
+            polyline.setAttribute('stroke-dasharray', '10');
+            polyline.setAttribute('stroke-opacity', '0');
+            polyline.setAttribute('stroke-width', '10');
+            polyline.setAttribute('fill', 'white');
+            polyline.setAttribute('fill-opacity', '0');
+            return polyline;
         }
         private createGElement(): void {
             this.g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -140,7 +161,11 @@
             return svgPoint.matrixTransform(this.svgCanvas.getScreenCTM().inverse());
         }
         private addPoint(event: MouseEvent) {
-            (<SVGPolylineElement>this.polyline).points.appendItem(this.getSVGPoint(event));
+            let svg: SVGSVGElement = (<SVGPolylineElement>this.polyline).ownerSVGElement;
+            let polylineSelection: Element = svg.querySelector('polyline.polyline-selection');
+            let svgPoint = this.getSVGPoint(event);
+            (<SVGPolylineElement>this.polyline).points.appendItem(svgPoint);
+            (<SVGPolylineElement>polylineSelection).points.appendItem(svgPoint);
         }
 
         protected handleStateChange() {
@@ -158,17 +183,24 @@
             }
         }
         private handleDrawStateEvents() {
+            let polylines: Array<SVGPolylineElement> = Array.prototype.slice.call(this.svgCanvas.getElementsByTagName('polyline'));
+            polylines.forEach(function (polyline, index) {
+                polyline.removeEventListener('click', this.onClick);
+            }, this);
+
+            this.onClick = (event: MouseEvent) => { this.click(event) };
             this.svgCanvas.addEventListener('click', this.onClick);
             this.svgCanvas.addEventListener('contextmenu', this.onContextMenu);
         }
         private handleEditStateEvents() {
             this.svgCanvas.removeEventListener('click', this.onClick);
             this.svgCanvas.removeEventListener('contextmenu', this.onContextMenu);
+
+            this.onClick = (event: MouseEvent) => { this.polylineSelect(event) };
+            let polylines: Array<SVGPolylineElement> = Array.prototype.slice.call(this.svgCanvas.getElementsByTagName('polyline'));
+            polylines.forEach(function (polyline, index) {
+                polyline.addEventListener('click', this.onClick);
+            }, this);
         }
-    }
-    class PolylineObject {
-        svg: SVGSVGElement;
-        polyline: SVGPolylineElement;
-        nodes: Array<SVGRect>;
     }
 }

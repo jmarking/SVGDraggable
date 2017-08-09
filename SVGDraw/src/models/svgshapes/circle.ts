@@ -25,7 +25,7 @@ module SVGDraw {
             });
         }
         private loadEvents(): void {
-            this.svgCanvas.addEventListener('pointerdown', this.onPointerDown);
+            //this.svgCanvas.addEventListener('pointerdown', this.onPointerDown);
         }
         private pointerDown(event: MouseEvent): void {
             let svg = this.createSVGElement();
