@@ -1,11 +1,18 @@
-﻿.rectNode:hover {
-    cursor: move;
-}
-svg .rectNode {
+﻿svg .rectNode {
     stroke-opacity: 0;
     fill-opacity: 0;
 }
-svg.draw-state .rectNode {
+
+.draw-state .rectNode {
     stroke-opacity: 1;
     fill-opacity: 1;
 }
+
+.edit-state[selected] .rectNode {
+    stroke-opacity: 1;
+    fill-opacity: 1;
+}
+
+    .edit-state[selected] .rectNode:hover {
+        cursor: move;
+    }
